@@ -638,7 +638,135 @@
             transform: translateY(0);
         }
 
+        /* 收尾界面 */
+        .ending-section {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(139, 69, 19, 0.95) 0%, rgba(8, 47, 73, 0.95) 50%, rgba(206, 183, 124, 0.95) 100%);
+            backdrop-filter: blur(15px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .ending-section.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .ending-content {
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            transform: translateY(30px);
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .ending-section.show .ending-content {
+            transform: translateY(0);
+        }
+
+        .ending-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 40px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            letter-spacing: 0.05em;
+        }
+
+        .postcard-container {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 40px;
+        }
+
+        .postcard-image {
+            width: 350px;
+            height: auto;
+            border-radius: 15px;
+            box-shadow: 
+                0 15px 35px rgba(0, 0, 0, 0.3),
+                0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.4s ease;
+        }
+
+        .postcard-image:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.4),
+                0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .postcard-frame {
+            position: absolute;
+            top: -15px;
+            left: -15px;
+            right: -15px;
+            bottom: -15px;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            pointer-events: none;
+            box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+
+        .ending-footer {
+            color: #fff;
+        }
+
+        .ending-footer p {
+            font-size: 18px;
+            margin-bottom: 30px;
+            opacity: 0.9;
+            text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .restart-button {
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+            background: linear-gradient(135deg, #D32F2F, #B71C1C);
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(211, 47, 47, 0.4);
+        }
+
+        .restart-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(211, 47, 47, 0.6);
+            background: linear-gradient(135deg, #E57373, #D32F2F);
+        }
+
+        .restart-button:active {
+            transform: translateY(0);
+        }
+
         /* 响应式设计 */
+        @media (max-width: 768px) {
+            .ending-title {
+                font-size: 24px;
+                margin-bottom: 30px;
+            }
+            
+            .postcard-image {
+                width: 280px;
+            }
+            
+            .ending-content {
+                width: 95%;
+            }
+        }
+        
         @media (min-width: 768px) {
             .novel-container {
                 max-width: 640px;
@@ -738,6 +866,21 @@
 
     <!-- 继续按钮 -->
     <button class="continue-button" id="continueButton">继续</button>
+
+    <!-- 收尾界面 -->
+    <div class="ending-section hidden" id="endingSection">
+        <div class="ending-content">
+            <h2 class="ending-title">你和艾德里安圣诞之旅的纪念</h2>
+            <div class="postcard-container">
+                <img src="user_input_files/image.png" alt="艾德里安写给你的明信片" class="postcard-image">
+                <div class="postcard-frame"></div>
+            </div>
+            <div class="ending-footer">
+                <p>愿这个圣诞夜成为你们最美好的回忆 ✨</p>
+                <button class="restart-button" onclick="restartGame()">重新开始</button>
+            </div>
+        </div>
+    </div>
 
     <script>
         // MiniMax API配置
@@ -1043,10 +1186,10 @@
                     }
                 }, 6000);
             } else {
-                // 故事结束
+                // 故事结束 - 显示收尾界面
                 hideStatus();
                 hideThinking();
-                alert('恭喜你完成了这个浪漫的圣诞故事！🎄✨');
+                showEnding();
             }
         }
 
@@ -1787,6 +1930,51 @@
             const indicator = document.getElementById('statusIndicator');
             indicator.className = 'status-indicator';
             indicator.textContent = '';
+        }
+
+        // 显示收尾界面
+        function showEnding() {
+            const endingSection = document.getElementById('endingSection');
+            endingSection.classList.remove('hidden');
+            
+            // 延迟显示动画
+            setTimeout(() => {
+                endingSection.classList.add('show');
+            }, 100);
+        }
+
+        // 隐藏收尾界面
+        function hideEnding() {
+            const endingSection = document.getElementById('endingSection');
+            endingSection.classList.remove('show');
+            
+            setTimeout(() => {
+                endingSection.classList.add('hidden');
+            }, 600);
+        }
+
+        // 重新开始游戏
+        function restartGame() {
+            // 重置所有游戏状态
+            currentChapterIndex = 0;
+            dialogueStarted = false;
+            initialDialogue = true;
+            interactionMode = null;
+            currentQuestionIndex = 0;
+            
+            // 隐藏收尾界面
+            hideEnding();
+            
+            // 显示选择界面
+            document.getElementById('choiceScreen').classList.remove('hidden');
+            document.getElementById('gameContainer').classList.add('hidden');
+            document.getElementById('continueButton').classList.add('hidden');
+            
+            // 清除对话内容
+            const dialogueContainer = document.getElementById('dialogueContainer');
+            dialogueContainer.innerHTML = '';
+            
+            console.log('🎮 游戏重新开始');
         }
 
         // 启动应用
