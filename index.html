@@ -370,9 +370,10 @@
             position: fixed;
             bottom: 32px;
             right: 24px;
-            width: 64px;
-            height: 64px;
-            border-radius: 50%;
+            width: auto;
+            height: 48px;
+            padding: 0 24px;
+            border-radius: 24px;
             background: linear-gradient(135deg, #D32F2F, #B71C1C);
             border: none;
             color: white;
@@ -383,6 +384,9 @@
             transition: all 250ms ease-out;
             box-shadow: 0 6px 20px rgba(211, 47, 47, 0.6);
             z-index: 10;
+            font-size: 16px;
+            font-weight: 500;
+            letter-spacing: 1px;
         }
 
         .continue-button:hover {
@@ -732,11 +736,7 @@
     </div>
 
     <!-- 继续按钮 -->
-    <button class="continue-button" id="continueButton">
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-    </button>
+    <button class="continue-button" id="continueButton">继续</button>
 
     <script>
         // MiniMax API配置
@@ -1033,14 +1033,14 @@
                 currentChapterIndex++;
                 updateChapter();
                 
-                // 根据互动模式启动相应互动
+                // 根据互动模式启动相应互动（延长开场白显示时间到6秒）
                 setTimeout(() => {
                     if (interactionMode === 'dialogue') {
                         startDialogue();
                     } else if (interactionMode === 'options') {
                         startOptionInteraction();
                     }
-                }, 1000);
+                }, 6000);
             } else {
                 // 故事结束
                 hideStatus();
@@ -1527,18 +1527,18 @@
                     console.log('💬 启动对话模式...');
                     // 对话模式显示输入区域
                     document.getElementById('inputSection').classList.remove('hidden');
-                    // 延迟启动对话
+                    // 延迟启动对话（延长开场白显示时间到6秒）
                     setTimeout(() => {
                         startDialogue();
-                    }, 2000);
+                    }, 6000);
                 } else if (interactionMode === 'options') {
                     console.log('🎯 启动选项模式...');
                     // 选项模式隐藏输入区域
                     document.getElementById('inputSection').classList.add('hidden');
-                    // 延迟启动选项
+                    // 延迟启动选项（延长开场白显示时间到6秒）
                     setTimeout(() => {
                         startOptionInteraction();
-                    }, 2000);
+                    }, 6000);
                 } else {
                     console.error('❌ 未知的交互模式:', interactionMode);
                 }
@@ -1589,59 +1589,96 @@
             }
         }
 
-        // 发送MiniMax API消息
+        // 发送消息 - 使用预设文案
         async function sendMinimaxMessage(message) {
             // 显示AI正在思考
             showThinking();
             showStatus('艾德里安正在思考中...', 'loading');
             
             try {
-                // 调用MiniMax API
-                const response = await callMinimaxAPI(message);
-                
-                // 隐藏思考动画和状态
-                hideThinking();
-                hideStatus();
-                
-                // 显示AI回复
-                addDialogue('艾德里安', response, false);
-                
-                // 3秒后显示继续按钮
+                // 模拟思考时间
                 setTimeout(() => {
-                    document.getElementById('continueButton').classList.remove('hidden');
-                }, 3000);
-                
-            } catch (error) {
-                console.error('API调用失败:', error);
-                
-                // 隐藏思考动画和状态
-                hideThinking();
-                hideStatus();
-                
-                // 显示错误提示
-                showStatus('连接错误，请稍后重试', 'error');
-                
-                // 显示友好的默认回复
-                setTimeout(() => {
-                    const fallbackResponses = [
-                        '抱歉，我现在思绪有点乱。能再说一遍吗？',
-                        '这个话题让我有点害羞...我们聊点别的吧？',
-                        '抱歉刚才走神了。你说的很有意思。'
-                    ];
-                    const fallback = fallbackResponses[Math.floor(Math.random() * fallbackResponses.length)];
-                    addDialogue('艾德里安', fallback, false);
+                    hideThinking();
+                    hideStatus();
                     
-                    // 3秒后显示继续按钮
+                    // 根据用户输入生成对应的回复
+                    const response = generateResponse(message);
+                    addDialogue('艾德里安', response, false);
+                    
+                    // 5秒后显示继续按钮（延长展示时间）
                     setTimeout(() => {
                         document.getElementById('continueButton').classList.remove('hidden');
-                    }, 3000);
+                    }, 5000);
                     
-                    // 3秒后隐藏错误状态
-                    setTimeout(() => {
-                        hideStatus();
-                    }, 3000);
-                }, 1000);
+                }, 2000);
+                
+            } catch (error) {
+                console.error('处理消息时出错:', error);
+                
+                // 隐藏思考动画和状态
+                hideThinking();
+                hideStatus();
+                
+                // 显示友好的默认回复
+                const fallbackResponses = [
+                    '抱歉，我现在思绪有点乱。能再说一遍吗？',
+                    '这个话题让我有点害羞...我们聊点别的吧？',
+                    '抱歉刚才走神了。你说的很有意思。'
+                ];
+                const fallback = fallbackResponses[Math.floor(Math.random() * fallbackResponses.length)];
+                addDialogue('艾德里安', fallback, false);
+                
+                // 5秒后显示继续按钮
+                setTimeout(() => {
+                    document.getElementById('continueButton').classList.remove('hidden');
+                }, 5000);
             }
+        }
+
+        // 生成预设回复
+        function generateResponse(userMessage) {
+            const message = userMessage.toLowerCase();
+            const responses = {
+                // 打招呼相关
+                'hello': ['你好！见到你真开心～', '你好！今天天气真不错呢！', 'Hello! 你好，我在这里等着你！'],
+                '你好': ['你好！见到你真开心～', '你好！今天心情怎么样？', '你好！很高兴见到你！'],
+                'hi': ['Hi！你的笑容真好看～', '嗨！今天过得怎么样？', 'Hi！看起来心情不错呢～'],
+                
+                // 圣诞相关
+                '圣诞': ['圣诞节真是太美了！和你一起过圣诞真是件幸福的事～', '圣诞的氛围总是让人心情温暖，你也有这种感觉吗？', '圣诞节就快到了，你期待吗？'],
+                '雪花': ['雪花真的很美，就像你的眼睛一样...', '飘落的雪花让这个夜晚更加浪漫，不是吗？', '雪花纷飞的夜晚总是充满了魔法～'],
+                '礼物': ['礼物不只是物品，更重要的是那份心意～', '你会喜欢什么礼物呢？我想给你一个特别的惊喜～', '收到礼物时的表情总是最美的～'],
+                
+                // 情感表达
+                '喜欢': ['我也很喜欢你～和你在一起的每一刻都很珍贵', '谢谢你这么说，这让我的心很温暖', '你的话让我脸红红的...'],
+                '美丽': ['你也很美！你的美让人心醉～', '你今天特别美～', '在你身边，总是被你的美丽深深吸引'],
+                
+                // 地点相关
+                '小镇': ['这个小镇确实很美，也很有魔法～', '这里充满了我们的美好回忆～', '小镇的夜晚总是让人感到温馨'],
+                
+                // 默认回复
+                'default': [
+                    '这听起来很有趣呢～能告诉我更多吗？',
+                    '你说的话让我很感兴趣～',
+                    '嗯嗯，我在认真听着呢～',
+                    '你的想法很特别～',
+                    '这让我想起了一些美好的事...',
+                    '你想的真周到～',
+                    '这确实很有意思',
+                    '你说得对～我也这样想的',
+                    '我们真是心有灵犀呢～'
+                ]
+            };
+
+            // 检查关键词匹配
+            for (const [keyword, responseList] of Object.entries(responses)) {
+                if (keyword !== 'default' && message.includes(keyword)) {
+                    return responseList[Math.floor(Math.random() * responseList.length)];
+                }
+            }
+            
+            // 默认回复
+            return responses.default[Math.floor(Math.random() * responses.default.length)];
         }
 
         // 调用MiniMax API
