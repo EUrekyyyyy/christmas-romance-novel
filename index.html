@@ -128,30 +128,34 @@
         .scene-display {
             flex: 1;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            padding: 0 16px;
+            justify-content: flex-start;
+            padding: 20px 16px 16px 16px; /* 进一步减少顶部内边距 */
             min-height: 0;
         }
 
         .scene-content {
             text-align: center;
             max-width: 600px;
+            width: 100%;
         }
 
         .story-text {
             font-size: 16px;
             line-height: 1.7;
             color: #FFFFFF;
-            background: rgba(10, 5, 5, 0.7);
+            background: rgba(10, 5, 5, 0.6); /* 降低不透明度，让背景更透明 */
             padding: 20px 24px;
-            border-radius: 24px;
+            border-radius: 20px;
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            margin-bottom: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            margin: 0 auto 16px auto;
             transform: scale(0.8);
             animation: storyAppear 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            position: relative;
+            z-index: 10;
         }
 
         @keyframes storyAppear {
